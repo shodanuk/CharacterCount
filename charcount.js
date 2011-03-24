@@ -1,4 +1,4 @@
-CharacterCount = Class.create({
+var CharacterCount = Class.create({
   initialize: function(el, options) {
     this.options = Object.extend({
       html: '<div class="char-count"><span></span></div>',
