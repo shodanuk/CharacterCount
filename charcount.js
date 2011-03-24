@@ -1,20 +1,21 @@
-var CharCount = Class.create({
+CharacterCount = Class.create({
   initialize: function(el, options) {
     this.options = Object.extend({
-      countId: 'count',
-      html: '<div class="char-count"><span id="#{id}"></span></div>',
+      html: '<div class="char-count"><span></span></div>',
       limit: null,
-      limitNote: '<span class="limit-note">(Max length: #{limit})</span>'
+      limitNote: '<span class="limit-note">(Max length: #{limit})</span>',
+      wrapperClass: 'char-count-wrapper'
     }, options || {});
     this.el = $(el);
     this.build();
   },
   build: function() {
-    var htmlTemplate = new Template(this.options.html),
-        limitTemplate;
-    this.el.insert({ after: htmlTemplate.evaluate({ 'id' : this.options.countId }) });
-    this.count = $(this.options.countId);
-    if (this.options.limit) {
+    var limitTemplate;
+    this.wrapper = new Element('div').addClassName(this.options.wrapperClass);
+    Element.wrap(this.el, this.wrapper);
+    this.wrapper.insert({ bottom : this.options.html });
+    this.count = this.wrapper.down('span');
+    if ( this.options.limit ) {
       limitTemplate = new Template(this.options.limitNote);
       this.count.insert({ after : limitTemplate.evaluate({ limit: this.options.limit }) });
     }
@@ -22,10 +23,10 @@ var CharCount = Class.create({
     this.el.observe('keyup', this.updateCount.bind(this));
   },
   updateCount: function() {
-    var valueLen = $F(this.el).length;
+    var valueLen = $F(this.el).length, val;
     if(this.options.limit !== null) {
       if ( valueLen >= this.options.limit ) {
-        var val = $F(this.el).substring(0, this.options.limit);
+        val = $F(this.el).substring(0, this.options.limit);
         this.el.setValue(val);
         this.count.addClassName('limit');
         valueLen = this.options.limit;
